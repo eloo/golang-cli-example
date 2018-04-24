@@ -1,0 +1,13 @@
+[run]
+init_cmds = [
+  ["go", "build", "-o", "./build/golang-cli-example"],
+	["./build/golang-cli-example"]
+]
+watch_all = true
+watch_exts = [".go", ".ini", ".toml"]
+ignore = [".git", "vendor", "build", "dist"] # Directories to exclude from watching
+build_delay = 5
+cmds = [
+    ["go", "build", "-o", "./build/golang-cli-example"],
+	["./build/golang-cli-example"]
+]
