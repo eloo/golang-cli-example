@@ -1,3 +1,7 @@
+# Golang Makefile
+# Please do not alter this alter this directly
+GOLANG_MK_VERSION := 0.1.0
+
 GO ?= go
 
 GOFILES := $(shell find . -name "*.go" -type f ! -path "./vendor/*")
@@ -108,3 +112,7 @@ release-build:
 release-check:
 	@cd $(DIST); $(foreach file,$(filter-out $(wildcard $(DIST)/*.sha256), $(wildcard $(DIST)/*)),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
 
+# golang-update-makefile downloads latest version of golang.mk
+golang-update-makefile:
+	@wget https://raw.githubusercontent.com/eloo/dev-handbook/master/make/golang.mk -O /tmp/golang.mk 2>/dev/null
+	@if ! grep -q $(GOLANG_MK_VERSION) /tmp/golang.mk; then cp /tmp/golang.mk golang.mk && echo "golang.mk updated"; else echo "golang.mk is up-to-date"; fi

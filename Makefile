@@ -10,6 +10,7 @@ EXECUTABLE := $(NAME)
 TAGS ?=
 
 GIT_VERSION_TAG ?= $(shell git tag -l --points-at HEAD | grep v )
+VERSION := $(shell cat VERSION)
 
 ifneq ($(DRONE_TAG),)
 	VERSION ?= $(subst v,,$(DRONE_TAG))
