@@ -1,4 +1,4 @@
-include golang.mk
+.DEFAULT_GOAL := help
 
 DIST := bin
 BUILD_DIR := build
@@ -6,18 +6,23 @@ BUILD_DIR := build
 NAME := golang-cli-example
 EXECUTABLE := $(NAME)
 
-
 TAGS ?=
 
-GIT_VERSION_TAG ?= $(shell git tag -l --points-at HEAD | grep v )
 VERSION := $(shell cat VERSION)
 
-ifneq ($(DRONE_TAG),)
-	VERSION ?= $(subst v,,$(DRONE_TAG))
-else
-	ifneq ($(GIT_VERSION_TAG),)
-		VERSION ?= $(subst v,,$(GIT_VERSION_TAG))
-	else
-		VERSION ?= $(shell git branch | grep \* | cut -d ' ' -f2)
-	endif
-endif
+include golang.mk
+
+.PHONY: build
+build: golang-build ## Wrapper for golang-build
+
+.PHONY: version
+version: ## Prints the version
+	@echo $(VERSION) 
+
+.PHONY: help 
+help: ## Prints usage help for this makefile
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = "(:|: .*?## )"}; {printf "\033[36m%-30s\033[0m %s\n", $$(NF-1), $$(NF)}'
+
+.PHONY: 	
+goals: goals ## Prints all available goals 
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = "(:|: .*?## )"}; {printf "%s\n", $$(NF-1)}'
