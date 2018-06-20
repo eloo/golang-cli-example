@@ -15,6 +15,9 @@ include golang.mk
 .PHONY: build
 build: golang-build ## Wrapper for golang-build
 
+.PHONY: clean
+clean: golang-clean
+
 .PHONY: version
 version: ## Prints the version
 	@echo $(VERSION) 
