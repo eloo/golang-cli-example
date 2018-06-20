@@ -2,14 +2,20 @@ package main
 
 import (
 	"fmt"
-	"github.com/eloo/golang-cli-example/cmd"
 	"os"
+
+	"github.com/eloo/golang-cli-example/cmd"
 )
 
-var Version string
+// SemVer is the semantic version of this build
+var SemVer string
+
+// GitCommit is the git commit sha of this build
+var GitCommit string
 
 func main() {
-	cmd.Version = Version
+	cmd.SemVer = SemVer
+	cmd.GitCommit = GitCommit
 	if err := cmd.RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

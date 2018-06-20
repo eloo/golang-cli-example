@@ -2,10 +2,15 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
 )
 
-var Version string
+// SemVer is the semantic version of this build
+var SemVer string
+
+// GitCommit is the git commit sha of this build
+var GitCommit string
 
 func init() {
 	RootCmd.AddCommand(versionCmd)
@@ -16,6 +21,6 @@ var versionCmd = &cobra.Command{
 	Aliases: []string{"v"},
 	Short:   "Print the version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("golang-cli-example version " + Version)
+		fmt.Printf("golang-cli-example {SemVer: \"%s\", GitCommit: \"%s\"}\n", SemVer, GitCommit)
 	},
 }
