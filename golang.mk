@@ -1,6 +1,6 @@
 # Golang Makefile
 # Please do not alter this alter this directly
-GOLANG_MK_VERSION := 0.1.7
+GOLANG_MK_VERSION := 10
 
 GO ?= go
 
@@ -10,6 +10,16 @@ GOFMT ?= gofmt -s
 GOFLAGS := -i -v
 EXTRA_GOFLAGS ?=
 
+MKDIR_P = mkdir -p
+
+# Defaults for directory
+# Can be modified by setting it before loading this file
+ifndef DIST_DIR
+	DIST_DIR := bin
+endif
+ifndef BUILD_DIR
+	BUILD_DIR := build
+endif
 # Defaults for build release artifacts
 # Can be modified by setting it before loading this file
 ifndef GOLANG_RELEASE_OS
@@ -24,12 +34,16 @@ endif
 
 LDFLAGS := -X "main.SemVer=${VERSION}" -X "main.GitCommit=$(shell git describe --tags --always | sed 's/-/+/' | sed 's/^v//')" -X "main.Tags=$(TAGS)"
 
-PACKAGES ?= $($(shell $(GO) list ./... | grep -v /vendor/))
+PACKAGES ?= $(shell $(GO) list ./... | grep -v /vendor/)
+
+.PHONY: golang-directories
+golang-directories: ## Creates necessary directories for golang.mk
+	$(MKDIR_P) $(BUILD_DIR)
 
 .PHONY: golang-clean
 golang-clean: ## Cleanup go files
 	$(GO) clean -i ./...
-	rm -rf $(EXECUTABLE) $(DIST) $(BUILD_DIR)
+	rm -rf $(EXECUTABLE) $(DIST_DIR) $(BUILD_DIR)
 
 .PHONY: golang-dep
 golang-dep: ## Run dep ensure
@@ -96,11 +110,16 @@ golang-test: ## Test go files
 	$(GO) test $(PACKAGES)
 
 .PHONY: golang-coverage
-golang-coverage: ## Run code coverage
+golang-coverage: golang-directories ## Runs tests with coverage
+	go test -covermode=count -coverprofile $(BUILD_DIR)/coverage.out $(PACKAGES)
+
+.PHONY: golang-coverage-report
+golang-coverage-report: golang-coverage ## Creates an html report for the code coverage
 	@hash gocovmerge > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		$(GO) get -u github.com/wadey/gocovmerge; \
 	fi
-	gocovmerge integration.coverage.out $(shell find . -type f -name "coverage.out") > coverage.all;\
+	gocovmerge $(shell find . -type f -name "coverage.out") > $(BUILD_DIR)/coverage.all
+	go tool cover -html=$(BUILD_DIR)/coverage.all -o $(BUILD_DIR)/coverage.html
 
 .PHONY: golang-install
 golang-install: $(wildcard *.go) ## Run go install
@@ -122,12 +141,21 @@ golang-release-build: ## Build release binaries
 	@hash gox > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
 		$(GO) get -u github.com/mitchellh/gox; \
 	fi
-	gox -os "${GOLANG_RELEASE_OS}" -arch="${GOLANG_RELEASE_ARCH}" -osarch="${GOLANG_RELEASE_OSARCH}" -ldflags '$(LDFLAGS)' -output "$(DIST)/$(EXECUTABLE)-$(VERSION)_{{.OS}}_{{.Arch}}"
+	gox -os "${GOLANG_RELEASE_OS}" -arch="${GOLANG_RELEASE_ARCH}" -osarch="${GOLANG_RELEASE_OSARCH}" -ldflags '$(LDFLAGS)' -output "$(DIST_DIR)/$(EXECUTABLE)-$(VERSION)_{{.OS}}_{{.Arch}}"
 
 .PHONY: golang-release-check
 golang-release-check: ## Create sha256 sums
-	@cd $(DIST); $(foreach file,$(filter-out $(wildcard $(DIST)/*.sha256), $(wildcard $(DIST)/*)),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;)
+	@hash sha256sum > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		echo "Warning: sha256sum not found"; \
+	else \
+		cd $(DIST_DIR); $(foreach file,$(filter-out $(wildcard $(DIST_DIR)/*.sha256), $(wildcard $(DIST_DIR)/*)),sha256sum $(notdir $(file)) > $(notdir $(file)).sha256;) \
+	fi
 
 golang-update-makefile: ## Update the golang.mk
 	@wget https://raw.githubusercontent.com/eloo/dev-handbook/master/make/golang.mk -O /tmp/golang.mk 2>/dev/null
-	@if ! grep -q $(GOLANG_MK_VERSION) /tmp/golang.mk; then cp /tmp/golang.mk golang.mk && echo "golang.mk updated"; else echo "golang.mk is up-to-date"; fi
+	@if [ $(shell cat /tmp/golang.mk | grep GOLANG_MK_VERSION -m1 | cut -d" " -f3) -gt $(GOLANG_MK_VERSION) ] ; then \
+         cp /tmp/golang.mk golang.mk;\
+		 echo "golang.mk updated";\
+	else \
+		echo "golang.mk is up-to-date"; \
+    fi
