@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 
 # Configuration of different directories
-DIST_DIR := bin1
+DIST_DIR := bin
 BUILD_DIR := build
 
 NAME := golang-cli-sample
