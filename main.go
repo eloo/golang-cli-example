@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 
+	_ "github.com/eloo/golang-cli-example/init"
+
 	"github.com/eloo/golang-cli-example/cmd"
 )
 

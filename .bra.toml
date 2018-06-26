@@ -1,13 +1,19 @@
 [run]
 init_cmds = [
-  ["go", "build", "-o", "./build/golang-cli-example"],
-	["./build/golang-cli-example"]
+  ["go", "build", "-o", "./build/github-cli-example"],
+	["./build/github-cli-example", "v"]
 ]
+# Watch all directories
 watch_all = true
 watch_exts = [".go", ".ini", ".toml"]
-ignore = [".git", "vendor", "build", "dist"] # Directories to exclude from watching
+
+# Directories to exclude from watching
+ignore = [".git", ".travis",".vscode", "vendor", "build", "dist"] 
+
+# Minimum delay between two builds
 build_delay = 5
+
 cmds = [
-    ["go", "build", "-o", "./build/golang-cli-example"],
-	["./build/golang-cli-example"]
+  ["go", "build", "-o", "./build/github-cli-example"],
+  ["./build/github-cli-examplel", "v"]
 ]
