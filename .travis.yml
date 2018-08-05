@@ -9,6 +9,9 @@ before_script:
 script: 
   - "./.travis/buildViaTravis.sh"
 
+before_deploy:
+  - cat VERSION | xargs git tag
+
 deploy:
   provider: releases
   api_key: $GITHUB_RELEASE_TOKEN
@@ -17,3 +20,4 @@ deploy:
   skip_cleanup: true
   on:
     brach: master
+    tag: true
