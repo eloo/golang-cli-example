@@ -4,13 +4,15 @@ go:
   - "1.10"
 
 before_script:
-  - "make golang-dep"
+  - go get github.com/Clever/gitsem
+  - make golang-dep
   
 script: 
-  - "./.travis/buildViaTravis.sh"
+  - ./.travis/buildViaTravis.sh
 
 before_deploy:
-  - cat VERSION | xargs git tag
+  gitsem minor
+  # - cat VERSION | xargs git tag
 
 deploy:
   provider: releases
