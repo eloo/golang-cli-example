@@ -19,6 +19,9 @@ include golang.mk
 .PHONY: build
 build: golang-build ## Wrapper for golang-build
 
+.PHONY: release
+release: golang-release ## Wrapper for golang-release
+
 .PHONY: test
 test: golang-test ## Wrapper for golang-test
 
