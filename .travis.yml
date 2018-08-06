@@ -24,3 +24,6 @@ deploy:
   on:
     brach: master
     # tag: true
+
+after_success:
+- .travis/push.sh
