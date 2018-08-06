@@ -4,14 +4,14 @@ go:
   - "1.10"
 
 before_script:
-  - go get github.com/Clever/gitsem
+  - go get github.com/eloo/gitsem
   - make golang-dep
   
 script: 
   - ./.travis/buildViaTravis.sh
 
 before_deploy:
-  gitsem minor
+  gitsem -skip-repo-check=true minor
   # - cat VERSION | xargs git tag
 
 deploy:
