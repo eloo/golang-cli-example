@@ -6,13 +6,13 @@ go:
 before_script:
   - go get github.com/eloo/gitsem
   - make golang-dep
-  - gitsem -skip-repo-check=true -m "[ci skip]" minor
+  - gitsem -skip-repo-check=True -m "[ci skip]" minor
   
 script: 
   - ./.travis/buildViaTravis.sh
 
 before_deploy:
-  # gitsem -skip-repo-check=true minor
+  # gitsem -skip-repo-check=True minor
   # - cat VERSION | xargs git tag
 
 deploy:
