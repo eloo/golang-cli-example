@@ -6,7 +6,7 @@ go:
 before_script:
   - go get github.com/eloo/gitsem
   - make golang-dep
-  - gitsem minor -skip-repo-check=true -m "[ci skip]"
+  - gitsem -skip-repo-check=true -m "[ci skip]" minor
   
 script: 
   - ./.travis/buildViaTravis.sh
